@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# EyeTracker Cozy — Unix (macOS / Linux) Setup and Build Script
+# EyeTracker — Unix (macOS / Linux) Setup and Build Script
 set -e
 
-echo "=== EyeTracker Cozy: Unix Setup & Build ==="
+echo "=== EyeTracker: Unix Setup & Build ==="
 
 # Check Python 3
 if ! command -v python3 &> /dev/null; then
@@ -27,7 +27,7 @@ pip install pyinstaller
 
 # Run application test
 echo "Verifying application..."
-python3 -c "from gui_app import EyeTrackerCozyApp; print('App module loaded successfully!')"
+python3 -c "from gui_app import EyeTrackerApp; print('App module loaded successfully!')"
 
 # Optional: Build with PyInstaller
 if [ "$1" == "--build" ]; then

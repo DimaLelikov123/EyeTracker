@@ -1,5 +1,5 @@
 @echo off
-title EyeTracker Cozy
+title EyeTracker
 cd /d "%~dp0"
 
 if not exist "%~dp0.venv\Scripts\python.exe" (

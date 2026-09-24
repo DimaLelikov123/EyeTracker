@@ -17,7 +17,7 @@ def compute_sha256(filepath):
 
 def main():
     print("=" * 60)
-    print("=== EyeTracker Cozy: Automated Standalone Windows Build ===")
+    print("=== EyeTracker: Automated Standalone Windows Build ===")
     print("=" * 60)
 
     project_dir = os.path.abspath(os.path.dirname(__file__))
@@ -78,7 +78,7 @@ def main():
     print(f"[OK] Assets copied to: {dest_assets}")
 
     # 3. Create Release ZIP archive
-    zip_name = "EyeTracker-Cozy-v1.0-Windows.zip"
+    zip_name = "EyeTracker-v1.0-Windows.zip"
     zip_path = os.path.join("dist", zip_name)
     dist_eyetracker_dir = os.path.join("dist", "EyeTracker")
 

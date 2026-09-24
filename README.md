@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="assets/icon.png" width="128" height="128" alt="EyeTracker Cozy Logo" style="border-radius: 28px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);" />
+<img src="assets/icon.png" width="128" height="128" alt="EyeTracker Logo" style="border-radius: 28px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);" />
 
-# ✦ EyeTracker Cozy ✦
+# ✦ EyeTracker ✦
 ### Gentle, AI-Powered Blink Tracker & Eye Strain Prevention
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-amber.svg)](LICENSE)
@@ -10,17 +10,17 @@
 [![Python](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11-green.svg)]()
 [![Privacy: 100% Offline](https://img.shields.io/badge/Privacy-100%25%20Offline-brightgreen.svg)]()
 
-*Protect your eyesight while coding, gaming, studying, or browsing. Built with a soothing, distraction-free aesthetic inspired by cozy farm-sim games.*
+*Protect your eyesight while coding, gaming, studying, or browsing. Built with a soothing, distraction-free aesthetic inspired by warm nature palettes.*
 
 </div>
 
 ---
 
-## ☕ Why EyeTracker Cozy?
+## ☕ Why EyeTracker?
 
 When we focus deeply on screens, our blink rate drops from the healthy baseline of **15–20 blinks/min** down to **4–7 blinks/min**. This causes digital eye strain, dryness, headache, and fatigue.
 
-**EyeTracker Cozy** runs silently in the background:
+**EyeTracker** runs silently in the background:
 - Tracks your eye blinks in real-time through your webcam using lightweight computer vision.
 - Warns you when your eyes are drying out.
 - Ranks your active applications by eye strain (e.g., Code Editor vs Browser vs Gaming).
@@ -38,7 +38,7 @@ When we focus deeply on screens, our blink rate drops from the healthy baseline 
   - `⚠️ Eyes Drying Out` ($< 10$ blinks/min)
 - 📅 **7-Day History & Weekly Summary**: View screen time, total blinks, average rate, and completed breaks across previous days.
 - 🕯️ **Customizable Eye Stretch Reminders**: Set gentle breaks every **15, 30 (recommended), 45, or 60 minutes** with silent toast notifications and in-app reminders.
-- 🎨 **Fields of Mistria Cozy Palette**: Warm espresso, matcha sage, and terracotta interface with smooth window resizing and instant language switching (**English 🇬🇧** & **Ukrainian 🇺🇦**).
+- 🎨 **Warm Aesthetic Palette**: Warm espresso, matcha sage, and terracotta interface with smooth window resizing and instant language switching (**English 🇬🇧** & **Ukrainian 🇺🇦**).
 - 🔒 **100% Privacy by Design**: All processing happens strictly on your local CPU in RAM. No video recording, no screenshots, and zero internet connections.
 
 ---
@@ -48,7 +48,7 @@ When we focus deeply on screens, our blink rate drops from the healthy baseline 
 ### 🪟 Windows (Pre-built Standalone App)
 No Python installation required!
 1. Go to the [**Releases**](../../releases) tab.
-2. Download the latest `EyeTracker-Cozy-v1.0-Windows.zip`.
+2. Download the latest `EyeTracker-v1.0-Windows.zip`.
 3. Extract the archive and double-click **`EyeTracker.exe`** (featuring the custom eye icon).
 4. *(Optional)* Right-click `EyeTracker.exe` and select **Send to → Desktop (create shortcut)**.
 
@@ -62,8 +62,8 @@ Ensure you have **Python 3.9+** and a webcam:
 
 ```bash
 # 1. Clone this repository
-git clone https://github.com/your-username/EyeTracker-Cozy.git
-cd EyeTracker-Cozy
+git clone https://github.com/DimaLelikov123/EyeTracker.git
+cd EyeTracker
 
 # 2. Create and activate a virtual environment
 python3 -m venv .venv
@@ -92,7 +92,7 @@ We take your digital privacy and security seriously:
 ## ⚖️ Medical & Software Disclaimer
 
 > **PLEASE NOTE**:
-> EyeTracker Cozy is an independent productivity and wellness awareness tool designed to remind users to rest their eyes during prolonged screen use.
+> EyeTracker is an independent productivity and wellness awareness tool designed to remind users to rest their eyes during prolonged screen use.
 > It is **NOT** a medical diagnostic tool, medical device, or clinical treatment software. It is not intended to diagnose, treat, cure, or prevent any eye disease or medical condition. Always consult a qualified healthcare or eye care professional (optometrist or ophthalmologist) for any visual symptoms or health concerns.
 >
 > The software is provided "AS IS", without warranty of any kind, express or implied. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability arising from the use of this software.
@@ -108,7 +108,7 @@ If you want to build the `.exe` yourself:
 .\.venv\Scripts\python.exe build_exe.py
 ```
 
-This compiles the project with all MediaPipe models, CustomTkinter assets, and icon resources into `dist/EyeTracker/` and automatically creates `dist/EyeTracker-Cozy-v1.0-Windows.zip`.
+This compiles the project with all MediaPipe models, CustomTkinter assets, and icon resources into `dist/EyeTracker/` and automatically creates `dist/EyeTracker-v1.0-Windows.zip`.
 
 ---
 

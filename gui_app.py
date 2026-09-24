@@ -83,8 +83,8 @@ COZY_PALETTE = {
 # Complete Ukrainian & English Localizations (Russian removed)
 TRANSLATIONS = {
     "UA": {
-        "title": "EyeTracker Cozy — Турбота про ваш зір ☕",
-        "app_name": "✦ EyeTracker Cozy ✦",
+        "title": "EyeTracker — Турбота про ваш зір ☕",
+        "app_name": "✦ EyeTracker ✦",
         "tagline": "Мінімалістичний трекер кліпань",
         "btn_start": "✦  Запустити",
         "btn_stop": "⏹  Зупинити",
@@ -125,9 +125,9 @@ TRANSLATIONS = {
         "metric_pause": "✦ Пауза",
         "metric_session": "✦ Сесія",
         "footer_note": "🌿 Камера працює у фоні без показу відео. Нагадування розминки з'являються тихо через вибраний інтервал.",
-        "toast_break_title": "EyeTracker Cozy 🌿 Розминка для очей",
+        "toast_break_title": "EyeTracker 🌿 Розминка для очей",
         "toast_break_msg": "Минуло {mins} хв! За цей час ви кліпнули {blinks} разів ({bpm} кліп/хв). Погляньте вдаль на 20-30 с та розімніть очі ☕",
-        "toast_test_title": "EyeTracker Cozy 🌿 Тест розминки",
+        "toast_test_title": "EyeTracker 🌿 Тест розминки",
         "toast_test_msg": "Тестове нагадування: за {mins} хв зафіксовано {blinks} кліпань ({bpm} кліп/хв). Час перевести погляд вдаль ✨",
         "in_app_break": "🌿 Час розім'яти очі: {mins} хв за екраном, {blinks} кліпань ({bpm} кліп/хв). Погляньте вдаль на 20-30 с ✨",
         "modal_session_title": "☕ Підсумок сесії",
@@ -165,8 +165,8 @@ TRANSLATIONS = {
         "btn_open_sessions_folder": "📂 Папка сесій",
     },
     "EN": {
-        "title": "EyeTracker Cozy — Gentle Care for Your Eyes ☕",
-        "app_name": "✦ EyeTracker Cozy ✦",
+        "title": "EyeTracker — Gentle Care for Your Eyes ☕",
+        "app_name": "✦ EyeTracker ✦",
         "tagline": "Minimalist blink tracker",
         "btn_start": "✦  Start",
         "btn_stop": "⏹  Stop",
@@ -207,9 +207,9 @@ TRANSLATIONS = {
         "metric_pause": "✦ Pause",
         "metric_session": "✦ Session",
         "footer_note": "🌿 Camera runs in background without video. Eye break reminders appear silently at selected intervals.",
-        "toast_break_title": "EyeTracker Cozy 🌿 Eye Stretch Break",
+        "toast_break_title": "EyeTracker 🌿 Eye Stretch Break",
         "toast_break_msg": "It's been {mins} min! You blinked {blinks} times ({bpm} bpm). Look into the distance for 20-30 s and stretch your eyes ☕",
-        "toast_test_title": "EyeTracker Cozy 🌿 Break Test",
+        "toast_test_title": "EyeTracker 🌿 Break Test",
         "toast_test_msg": "Test reminder: {blinks} blinks tracked over {mins} min ({bpm} bpm). Time to look into the distance ✨",
         "in_app_break": "🌿 Time for an eye break: {mins} min on screen, {blinks} blinks ({bpm} bpm). Look into the distance ✨",
         "modal_session_title": "☕ Session Summary",
@@ -271,7 +271,7 @@ def generate_session_txt(session_data: dict, lang: str = "UA") -> str:
     sep = "=" * 54
     subsep = "-" * 54
 
-    title = "☕ EyeTracker Cozy — Звіт сесії" if is_ua else "☕ EyeTracker Cozy — Session Report"
+    title = "☕ EyeTracker — Звіт сесії" if is_ua else "☕ EyeTracker — Session Report"
     lbl_date = "Дата:" if is_ua else "Date:"
     lbl_start = "Початок:" if is_ua else "Start Time:"
     lbl_end = "Завершення:" if is_ua else "End Time:"
@@ -931,7 +931,7 @@ class HistoryAnalyticsModal(ctk.CTkToplevel):
         open_folder_cross_platform(sessions_dir)
 
 
-class EyeTrackerCozyApp(ctk.CTk):
+class EyeTrackerApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
@@ -939,7 +939,7 @@ class EyeTrackerCozyApp(ctk.CTk):
         if sys.platform == "win32":
             try:
                 import ctypes
-                myappid = 'eyetracker.cozy.ai.v1'
+                myappid = 'eyetracker.ai.v1'
                 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
             except Exception:
                 pass
@@ -2155,8 +2155,12 @@ class EyeTrackerCozyApp(ctk.CTk):
         os._exit(0)
 
 
+# Backward compatibility alias
+EyeTrackerCozyApp = EyeTrackerApp
+
+
 def main():
-    app = EyeTrackerCozyApp()
+    app = EyeTrackerApp()
     app.mainloop()
 
 

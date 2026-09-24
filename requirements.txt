@@ -1,4 +1,4 @@
-# EyeTracker Cozy — Dependencies
+# EyeTracker — Dependencies
 # Cross-platform requirements for Windows, macOS, and Linux
 
 # Core GUI & Computer Vision
