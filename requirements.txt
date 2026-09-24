@@ -1,0 +1,15 @@
+# EyeTracker Cozy — Dependencies
+# Cross-platform requirements for Windows, macOS, and Linux
+
+# Core GUI & Computer Vision
+customtkinter>=5.2.0
+mediapipe>=0.10.0
+opencv-python>=4.8.0
+pillow>=10.0.0
+psutil>=5.9.0
+plyer>=2.1.0
+
+# Windows-specific enhancements (direct notifications, active window, DirectShow camera)
+pywin32>=306; sys_platform == 'win32'
+win11toast>=0.36.0; sys_platform == 'win32'
+pygrabber>=0.2; sys_platform == 'win32'

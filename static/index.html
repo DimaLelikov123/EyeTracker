@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EyeTracker AI — Защита зрения и трекер морганий</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              500: '#06b6d4',
+              600: '#0891b2',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-cyan-500 selection:text-white">
+
+  <!-- Main Container -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Top Navigation / Header -->
+    <header class="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/80 backdrop-blur border border-slate-800 shadow-xl">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <i class="fa-solid fa-eye text-2xl text-white animate-pulse"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
+            EyeTracker AI
+          </h1>
+          <p class="text-xs text-slate-400">Умный мониторинг морганий и здоровья глаз</p>
+        </div>
+      </div>
+
+      <!-- Active Window / Activity Banner -->
+      <div id="activity-banner" class="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-sm">
+        <span id="activity-icon" class="text-xl">💻</span>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400">Активность:</span>
+            <span id="activity-label" class="font-semibold text-cyan-400">Определение...</span>
+          </div>
+          <span id="activity-window-title" class="text-xs text-slate-300 truncate max-w-xs md:max-w-sm font-mono">
+            Ожидание окна...
+          </span>
+        </div>
+      </div>
+
+      <!-- Controls & Status -->
+      <div class="flex items-center gap-3">
+        <div id="conn-badge" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>Камера активна</span>
+        </div>
+
+        <button id="btn-reset" title="Сбросить текущую сессию" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+        <button id="btn-sound-toggle" title="Включить / выключить звук" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 transition">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <button id="btn-settings" title="Настройки" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">
+          <i class="fa-solid fa-sliders"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Health Alert Banner (Appears when user hasn't blinked in > 10s) -->
+    <div id="alert-card" class="hidden p-4 rounded-2xl bg-gradient-to-r from-red-950/80 via-rose-900/60 to-red-950/80 border border-red-500/40 shadow-2xl shadow-red-500/10 text-white flex items-center justify-between animate-bounce">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-red-500/20 border border-red-500 flex items-center justify-center text-red-400 text-lg">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm text-red-200">Внимание! Глаза перенапряжены и пересыхают</h4>
+          <p id="alert-message" class="text-xs text-red-300">Сделайте серию глубоких морганий прямо сейчас!</p>
+        </div>
+      </div>
+      <button id="btn-dismiss-alert" class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-xs font-medium text-red-200 transition">
+        Понял
+      </button>
+    </div>
+
+    <!-- 4 Key Metrics Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Card 1: BPM -->
+      <div class="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Частота морганий</span>
+          <span class="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 text-sm"><i class="fa-solid fa-gauge-high"></i></span>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span id="metric-bpm" class="text-4xl font-extrabold text-white">0</span>
+          <span class="text-xs text-slate-400 font-medium">в минуту</span>
+        </div>
+        <!-- Rate bar -->
+        <div class="mt-3">
+          <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+            <span id="health-label" class="text-emerald-400 font-medium">Оптимально</span>
+            <span>Норма: 15–20</span>
+          </div>
+          <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden flex">
+            <div id="bpm-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-300" style="width: 50%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Total Blinks & Session Time -->
+      <div class="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Всего морганий</span>
+          <span class="p-2 rounded-xl bg-blue-500/10 text-blue-400 text-sm"><i class="fa-regular fa-eye"></i></span>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span id="metric-total-blinks" class="text-4xl font-extrabold text-white">0</span>
+          <span class="text-xs text-slate-400 font-medium">раз за сессию</span>
+        </div>
+        <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
+          <span>Среднее: <b id="metric-avg-bpm" class="text-slate-200">0</b>/мин</span>
+          <span>Сессия: <b id="metric-session-time" class="text-slate-200">00:00</b></span>
+        </div>
+      </div>
+
+      <!-- Card 3: Time Since Last Blink -->
+      <div class="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Без морганий</span>
+          <span class="p-2 rounded-xl bg-amber-500/10 text-amber-400 text-sm"><i class="fa-regular fa-clock"></i></span>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span id="metric-since-blink" class="text-4xl font-extrabold text-white">0.0</span>
+          <span class="text-xs text-slate-400 font-medium">сек</span>
+        </div>
+        <div class="mt-3 text-xs text-slate-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-info text-cyan-400"></i>
+          <span>Опасность сухости роговицы: &gt; 12 сек</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Eye Openness (EAR) & Eye Status -->
+      <div class="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Коэффициент EAR</span>
+          <span class="p-2 rounded-xl bg-purple-500/10 text-purple-400 text-sm"><i class="fa-solid fa-chart-simple"></i></span>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span id="metric-ear" class="text-4xl font-extrabold text-white">0.00</span>
+          <span id="eye-state-badge" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-emerald-400 font-semibold border border-slate-700">Открыты</span>
+        </div>
+        <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
+          <span>Порог срабатывания:</span>
+          <span id="metric-threshold-ear" class="font-mono text-slate-200">0.20</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Main Content Area: Camera & Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: Camera Feed & Activity Quick Controls (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Camera Preview Box -->
+        <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-4 shadow-xl space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-video text-cyan-400 text-sm"></i>
+              <h3 class="text-sm font-semibold text-slate-200">Превью камеры & Сетка глаз</h3>
+            </div>
+            <button id="btn-toggle-camera-view" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+              <i class="fa-regular fa-eye-slash mr-1"></i> Скрыть видео
+            </button>
+          </div>
+
+          <div id="video-container" class="relative rounded-xl overflow-hidden bg-slate-950 aspect-[4/3] flex items-center justify-center border border-slate-800">
+            <img id="camera-stream" src="/api/video_feed" alt="Video stream" class="w-full h-full object-cover">
+            
+            <div id="camera-hidden-overlay" class="hidden absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center text-center p-4">
+              <div class="w-14 h-14 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 text-2xl mb-2">
+                <i class="fa-solid fa-user-shield"></i>
+              </div>
+              <p class="text-sm font-medium text-slate-300">Режим приватности включен</p>
+              <p class="text-xs text-slate-500 mt-1">Трекинг морганий продолжается в фоне</p>
+            </div>
+
+            <div id="no-face-badge" class="hidden absolute bottom-3 left-3 px-3 py-1 rounded-lg bg-amber-500/80 backdrop-blur text-slate-950 text-xs font-semibold flex items-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <span>Лицо не найдено</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+            <span>Алгоритм: <b class="text-slate-300">MediaPipe Face Mesh (468 pts)</b></span>
+            <span id="face-fps" class="font-mono text-cyan-400">~30 FPS</span>
+          </div>
+        </div>
+
+        <!-- Activity Override Box -->
+        <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-4 shadow-xl space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+              <i class="fa-solid fa-tag text-purple-400"></i> Режим отслеживания активности
+            </h3>
+            <span id="mode-badge" class="text-[11px] px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-medium">Авто</span>
+          </div>
+
+          <p class="text-xs text-slate-400">
+            Система автоматически определяет категорию по активному окну Windows. Вы можете зафиксировать нужную категорию вручную:
+          </p>
+
+          <div class="grid grid-cols-3 gap-2 text-xs">
+            <button class="act-btn p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition" data-act="AUTO">
+              🤖 <b>Авто-детекция</b>
+            </button>
+            <button class="act-btn p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition" data-act="WORK">
+              💻 <b>Работа / Код</b>
+            </button>
+            <button class="act-btn p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition" data-act="GAMING">
+              🎮 <b>Игры</b>
+            </button>
+            <button class="act-btn p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition" data-act="VIDEO">
+              🎬 <b>Видео / Кино</b>
+            </button>
+            <button class="act-btn p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition" data-act="BROWSING">
+              🌐 <b>Веб-серфинг</b>
+            </button>
+            <button class="act-btn p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition" data-act="SOCIAL">
+              💬 <b>Общение</b>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Interactive Charts & Analytics (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- Chart 1: Real-time BPM Timeline -->
+        <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-cyan-400"></i> Динамика частоты морганий (минутный тренд)
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Частота морганий в минуту (BPM) и сопоставление с нормой</p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="inline-block w-3 h-3 rounded-sm bg-emerald-500"></span> <span class="text-slate-400">Норма (15)</span>
+            </div>
+          </div>
+          <div class="h-64">
+            <canvas id="timelineChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Activity Comparison (Gaming vs Work vs Video) -->
+        <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                <i class="fa-solid fa-chart-column text-amber-400"></i> Сравнение по активностям
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Средний темп морганий в разных типах задач (где глаза устают сильнее)</p>
+            </div>
+            <button id="btn-refresh-stats" class="text-xs text-slate-400 hover:text-white transition">
+              <i class="fa-solid fa-arrow-rotate-right mr-1"></i> Обновить
+            </button>
+          </div>
+          <div class="h-56">
+            <canvas id="activityChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Health Advice / Medical Norms Footer -->
+    <div class="p-4 rounded-2xl bg-slate-900/50 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-shield-heart text-cyan-400 text-base"></i>
+        <span><b>Медицинская справка:</b> При чтении и играх частота моргания падает на 60–70%, что приводит к высыханию слезной пленки. Норма: 15–20/мин.</span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-300">
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Норма: 15–20</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Экран: 8–14</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Сухость: &lt; 8</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-cyan-400"></i> Настройки EyeTracker
+        </h3>
+        <button id="btn-close-settings" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="space-y-4 text-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-slate-200">Звуковые напоминания</div>
+            <div class="text-xs text-slate-400">Мягкий сигнал при опасной задержке моргания</div>
+          </div>
+          <input type="checkbox" id="setting-sound" class="w-5 h-5 accent-cyan-500 cursor-pointer" checked>
+        </div>
+
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-300 font-medium">Порог задержки моргания (сек)</span>
+            <span id="setting-delay-val" class="text-cyan-400 font-mono">12 с</span>
+          </div>
+          <input type="range" id="setting-delay" min="8" max="25" value="12" class="w-full accent-cyan-500">
+        </div>
+
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-300 font-medium">Критический порог BPM (морганий/мин)</span>
+            <span id="setting-bpm-val" class="text-cyan-400 font-mono">8</span>
+          </div>
+          <input type="range" id="setting-bpm" min="5" max="15" value="8" class="w-full accent-cyan-500">
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-slate-200">Правило 20-20-20</div>
+            <div class="text-xs text-slate-400">Каждые 20 мин напоминать взглянуть вдаль</div>
+          </div>
+          <input type="checkbox" id="setting-rule" class="w-5 h-5 accent-cyan-500 cursor-pointer" checked>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end gap-2">
+        <button id="btn-save-settings" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 font-semibold text-white text-xs transition">
+          Сохранить настройки
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
